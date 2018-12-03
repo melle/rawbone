@@ -1,0 +1,31 @@
+{
+  "name": "rawbone",
+  "version": "1.0.0",
+  "description": "Fetches some data from Windhager heatings",
+  "main": "rawbone.js",
+  "dependencies": {
+    "request-digest": "^1.0.10",
+    "semaphore": "^1.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Windhager",
+    "heating",
+    "Heizung",
+    "Kessel",
+    "Pellets",
+    "Holzpellets",
+    "Scheitholz",
+    "Holz",
+    "Holzvergaser"
+  ],
+  "author": "Thomas Mellenthin <rawbone@dysternis.de>",
+  "license": "Beerware",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/melle/rawbone.git"
+  }
+}
