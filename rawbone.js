@@ -229,28 +229,56 @@ const OIDs = {
       '1/65/0/158/9': 'Kombikessel                                 ',
     };
 
-var sem = require('semaphore')(1);
 
-var digestRequest = require('request-digest')(config.USERNAME, config.PASSWORD);
-for (const [oid, description] of Object.entries(OIDs)) {
-  sem.take(function() {
-    digestRequest.requestAsync({
-      host: config.HOST,
-      path: PATH + oid,
-      port: 80,
-      method: 'GET'
-    })
-    .then(function (response) {
-      console.log(description + "\t" + oid + "\t" + mapOidValue(oid, response.body));
-      setTimeout(sem.leave, 200);
-    })
-    .catch(function (error) {
-      console.log(error)
-      console.log(error.statusCode);
-      console.log(error.body);
-    });
-  });
+
+if (program.list) {
+  listOIDs();
+} else if (program.fetch) {
+  queryOIDs(program.fetch.split(","), function() {});
 }
+
+/////////////////////////////////////////////////////////////////////////////
+// Implementation details
+/////////////////////////////////////////////////////////////////////////////
+
+function listOIDs() {
+  for (const [oid, description] of Object.entries(OIDs)) {
+    console.log(oid + "\t" + description);
+  }
+}
+
+/**
+ * 
+ * @param {[String]} oids 
+ * @param {function([oid, value])} callback 
+ */
+function queryOIDs(oids, callback) {
+  var sem = require('semaphore')(1);
+  var digestRequest = require('request-digest')(config.USERNAME, config.PASSWORD);
+  for (const [position, oid] of Object.entries(oids)) {
+    sem.take(function() {
+      digestRequest.requestAsync({
+        host: config.HOST,
+        path: PATH + oid,
+        port: 80,
+        method: 'GET'
+      })
+      .then(function (response) {
+        console.log(oid + "\t" + mapOidValue(oid, response.body) + "\t" + OIDs[oid]);
+        setTimeout(sem.leave, 200);
+      })
+      .catch(function (error) {
+        console.log(error)
+        console.log(error.statusCode);
+        console.log(error.body);
+      });
+    });
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Helper methods
+/////////////////////////////////////////////////////////////////////////////
 
 function mapOidValue(oid, json) {
     var parsed = JSON.parse(json);
