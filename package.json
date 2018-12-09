@@ -4,6 +4,7 @@
   "description": "Fetches some data from Windhager heatings",
   "main": "rawbone.js",
   "dependencies": {
+    "request": "^2.88.0",
     "request-digest": "^1.0.10",
     "semaphore": "^1.1.0"
   },

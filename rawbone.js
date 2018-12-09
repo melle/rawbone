@@ -234,7 +234,9 @@ const OIDs = {
 if (program.list) {
   listOIDs();
 } else if (program.fetch) {
-  queryOIDs(program.fetch.split(","), function() {});
+  fetchValues(program.fetch)
+} else if (program.openhab) {
+  openHABValue(program.openhab);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -245,6 +247,35 @@ function listOIDs() {
   for (const [oid, description] of Object.entries(OIDs)) {
     console.log(oid + "\t" + description);
   }
+}
+
+function fetchValues(values) {
+  queryOIDs(values.split(","), function(result) {
+    console.log(result);
+  });
+}
+
+function openHABValue(hab) {
+  var parsed = hab.split(" ");
+  console.log(parsed);
+  queryOIDs([parsed[0]], function(result) {
+    console.log(result)
+    postToOpenHab(parsed[1], result[1])
+  //  curl -H "Content-Type: text/plain"  -X POST -d "❤️"  "http://192.168.7.6:8080/rest/items/virt_string_biowin_mode"
+  });
+}
+
+function postToOpenHab(url, value) {
+  console.log(url + " - " + value);
+
+  var request = require('request');
+  request({
+      url: url,
+      method: "POST",
+      body: value
+  }, function (error, response, body){
+      console.log(error, response, body);
+  });
 }
 
 /**
@@ -264,7 +295,7 @@ function queryOIDs(oids, callback) {
         method: 'GET'
       })
       .then(function (response) {
-        console.log(oid + "\t" + mapOidValue(oid, response.body) + "\t" + OIDs[oid]);
+        callback([oid, mapOidValue(oid, response.body)]);
         setTimeout(sem.leave, 200);
       })
       .catch(function (error) {
