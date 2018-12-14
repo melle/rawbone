@@ -1,4 +1,4 @@
-#!/usr/local/bin/node
+#!/usr/bin/node --harmony 
 
 /*
  * ----------------------------------------------------------------------------
@@ -251,7 +251,7 @@ function listOIDs() {
 
 function fetchValues(values) {
   queryOIDs(values.split(","), function(result) {
-    console.log(result);
+    console.log(result[0] + "\t" + result[1]);
   });
 }
 
