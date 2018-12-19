@@ -16,7 +16,7 @@
 var program = require('commander');
 program
   .version('0.1.0')
-  .option('-o, --openhab [URL] [OID]', 'Posts the value of the given OID to the openHAB URL.')
+  .option('-o, --openhab "[OID URL]"', 'Posts the value of the given OID to the openHAB URL.')
   .option('-l, --list', 'List all known OIDs')
   .option('-f, --fetch [OIDs]', 'Fetches values for the given OIDs. OIDs must be submitted comma separated without spaces.')
 
@@ -26,7 +26,7 @@ program.on('--help', function(){
   console.log('')
   console.log('  Fetch the value of 1/60/0/155/1 and post the value to openHAB running at 192.168.23.42:');
   console.log('')
-  console.log('  $ rawbone -o http://192.168.23.42:8080/foo/bar/X "1/60/0/155/1"');
+  console.log('  $ rawbone -o "1/60/0/155/1 http://192.168.23.42:8080/foo/bar/X"');
   console.log('')
   console.log('  Fetch the given OIDs and print the values and a description of each value on the console');
   console.log('')
@@ -237,6 +237,8 @@ if (program.list) {
   fetchValues(program.fetch)
 } else if (program.openhab) {
   openHABValue(program.openhab);
+} else {
+  program.help();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -256,12 +258,10 @@ function fetchValues(values) {
 }
 
 function openHABValue(hab) {
-  var parsed = hab.split(" ");
-  console.log(parsed);
+	console.log(hab);
+  var parsed = hab.toString().split(" ");
   queryOIDs([parsed[0]], function(result) {
-    console.log(result)
     postToOpenHab(parsed[1], result[1])
-  //  curl -H "Content-Type: text/plain"  -X POST -d "❤️"  "http://192.168.7.6:8080/rest/items/virt_string_biowin_mode"
   });
 }
 
@@ -274,7 +274,7 @@ function postToOpenHab(url, value) {
       method: "POST",
       body: value
   }, function (error, response, body){
-      console.log(error, response, body);
+     // console.log(error); FIXME :)
   });
 }
 
